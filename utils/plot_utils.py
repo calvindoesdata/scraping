@@ -1,0 +1,58 @@
+from matplotlib.patches import Ellipse
+
+class Plotter:
+    def __init__(self, plt):
+        self.plt=plt
+
+        # Define plot parameters
+        plt.rcParams['axes.facecolor'] = '#E5E0E0'
+        plt.rcParams['figure.facecolor'] = '#E5E0E0'
+        plt.rcParams['text.color'] = 'black'
+
+    def plot_main_text(self, plt, title):
+        plt.title(title, ha="center", va="center",
+                  fontsize=20, fontweight='bold', color='black')
+        plt.text(x=+0, y=+0,
+                 s='Data from Understat.\nChart by @gavdoesdata.',
+                 fontsize=9, color='black')
+        
+    def plot_multi_main_text(self, plt, axs, title):
+        axs['title'].text(x=+0.5, y=+0.4, s=title, ha="center", va="center", fontsize=24, fontweight='bold', color='black')
+
+        plt.text(x=+0, y=+0,
+                 s='Data from Understat.\nChart by @gavdoesdata.',
+                 fontsize=9, color='black')
+
+    def plot_multi_axes_text(self, ax, title, title_elements, colours):
+        ax_title = ax.text(100, 101, title, ha='left', va='center', fontsize=14, fontweight='bold')
+        for element, colour in zip(title_elements, colours):
+            ax_title = ax.annotate(element + ' ', xycoords=ax_title, xy=(1, 0), verticalalignment="bottom", 
+                                   fontsize=15, color=colour, weight="bold")
+            
+    def plot_multi_axes_shots_text_1(self, ax, elements):
+        ax.text(x=1.5, y=51, s=f'Total shots: {elements[0]}\nTotal xG: {elements[1]:.1f}', 
+                fontsize=15, fontweight='bold', horizontalalignment='right')
+    
+    def plot_multi_axes_shots_text_2(self, ax, elements):
+        ax.text(x=1.5, y=98.1, s='2nd Half', 
+                fontsize=15, fontweight='bold', horizontalalignment='right')
+
+    def plot_legend(self, plt_or_ax, chart_objects_list, labels):
+        leg = plt_or_ax.legend(chart_objects_list, labels, ncol=1, frameon=True, fontsize=12,
+            handlelength=2, bbox_to_anchor=(0.945,0.025), borderpad=1.1,
+            handletextpad=1, scatterpoints = 1)
+    
+    def plot_marker_scale_legend(self, plt, fig):
+        def _circle(center, height, width):
+            center = center
+            height = height
+            width = width
+            ellipse = Ellipse(center, width, height, facecolor='white', edgecolor='black', linewidth=1.5)
+            fig.add_artist(ellipse)
+
+        circle_1 = _circle((0.9225,0.92), 0.05, 0.020)
+        circle_2 = _circle((0.8775,0.92), 0.025, 0.010)
+
+        plt.annotate("xG", xy=(0.1, 0.2), xycoords=fig.transFigure, xytext=(0.89225, 0.885), fontsize=12, fontweight='bold', zorder=3)
+        plt.annotate("", xy=(0.91, 0.919), xycoords=fig.transFigure, xytext=(0.888, 0.919), arrowprops=dict(arrowstyle="->", lw=2, color='black'), zorder=4)
+        #plt.annotate("", xy=(0.95, 2), xytext=(0.90, 29), arrowprops=dict(arrowstyle="->", lw=2, color='black'), zorder=2)

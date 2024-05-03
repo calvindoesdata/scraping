@@ -2,15 +2,6 @@ import os
 from matplotlib.patches import Ellipse
 from mplsoccer import VerticalPitch
 
-# ADD A TEAM MAP OF COLOURS FOR TITLES AND PLOT
-team_colours = {
-    'Arsenal': ['red','white'],
-    'Crystal Palace': ['royalblue','red'],
-    'Newcastle United': ['black','white'],
-    'Sheffield United': ['red','white'],
-    'Tottenham': ['white','navy']
-}
-
 class Plotter:
     def __init__(self, plt):
         self.plt=plt

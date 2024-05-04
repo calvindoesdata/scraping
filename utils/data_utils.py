@@ -26,9 +26,9 @@ def get_match_details(home_team, away_team):
 
 def get_xg_plot_data(df, home_team, away_team):
     shots_data = df[(df['h_team']==home_team) & (df['a_team']==away_team)]
-    shots_data['X'] = shots_data['X']*100
-    shots_data['Y'] = shots_data['Y']*100
-    shots_data['xG_scaled'] = shots_data['xG'] * 1500
+    shots_data['X'] = shots_data['X'].astype(float)*100
+    shots_data['Y'] = shots_data['Y'].astype(float)*100
+    shots_data['xG_scaled'] = shots_data['xG'].astype(float) * 1500
 
     return shots_data
 

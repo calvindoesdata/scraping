@@ -1,4 +1,6 @@
+import os
 from matplotlib.patches import Ellipse
+from mplsoccer import VerticalPitch
 
 class Plotter:
     def __init__(self, plt):
@@ -9,6 +11,26 @@ class Plotter:
         plt.rcParams['figure.facecolor'] = '#E5E0E0'
         plt.rcParams['text.color'] = 'black'
 
+        self.vertical_pitch = VerticalPitch(
+            pitch_type='opta', pad_bottom=0.5, half=True, goal_type='box', goal_alpha=0.8)
+
+    def make_plot_grid(self):
+        fig, axs = self.vertical_pitch.grid(
+            figheight=9, ncols=2, endnote_height=0.03, endnote_space=0,
+            axis=False, title_height=0.08, grid_height=0.84)
+        
+        return fig, axs
+    
+    def plot_scatter(self, goals_df, non_goals_df, primary_colour, secondary_colour, ax):
+        sc_non_goals = self.vertical_pitch.scatter(
+            non_goals_df.X, non_goals_df.Y, s=non_goals_df.xG_scaled,
+            edgecolors='#606060', c=primary_colour, marker='o', ax=ax)
+        sc_goals = self.vertical_pitch.scatter(
+            goals_df.X, goals_df.Y, s=goals_df.xG_scaled,
+            edgecolors='#606060', c=secondary_colour, marker='o', ax=ax, zorder=1)
+        
+        return sc_goals, sc_non_goals
+
     def plot_main_text(self, plt, title):
         plt.title(title, ha="center", va="center",
                   fontsize=20, fontweight='bold', color='black')
@@ -16,10 +38,10 @@ class Plotter:
                  s='Data from Understat.\nChart by @gavdoesdata.',
                  fontsize=9, color='black')
         
-    def plot_multi_main_text(self, plt, axs, title):
+    def plot_multi_main_text(self, axs, title):
         axs['title'].text(x=+0.5, y=+0.4, s=title, ha="center", va="center", fontsize=24, fontweight='bold', color='black')
 
-        plt.text(x=+0, y=+0,
+        self.plt.text(x=+0, y=+0,
                  s='Data from Understat.\nChart by @gavdoesdata.',
                  fontsize=9, color='black')
 
@@ -29,12 +51,8 @@ class Plotter:
             ax_title = ax.annotate(element + ' ', xycoords=ax_title, xy=(1, 0), verticalalignment="bottom", 
                                    fontsize=15, color=colour, weight="bold")
             
-    def plot_multi_axes_shots_text_1(self, ax, elements):
+    def plot_multi_axes_shots_text(self, ax, elements):
         ax.text(x=1.5, y=51, s=f'Total shots: {elements[0]}\nTotal xG: {elements[1]:.1f}', 
-                fontsize=15, fontweight='bold', horizontalalignment='right')
-    
-    def plot_multi_axes_shots_text_2(self, ax, elements):
-        ax.text(x=1.5, y=98.1, s='2nd Half', 
                 fontsize=15, fontweight='bold', horizontalalignment='right')
 
     def plot_legend(self, plt_or_ax, chart_objects_list, labels):
@@ -56,3 +74,11 @@ class Plotter:
         plt.annotate("xG", xy=(0.1, 0.2), xycoords=fig.transFigure, xytext=(0.89225, 0.885), fontsize=12, fontweight='bold', zorder=3)
         plt.annotate("", xy=(0.91, 0.919), xycoords=fig.transFigure, xytext=(0.888, 0.919), arrowprops=dict(arrowstyle="->", lw=2, color='black'), zorder=4)
         #plt.annotate("", xy=(0.95, 2), xytext=(0.90, 29), arrowprops=dict(arrowstyle="->", lw=2, color='black'), zorder=2)
+
+    def save_figure(self, fig, home_team, away_team, date):
+        if not os.path.exists(os.path.join('output')):
+            os.mkdir(os.path.join('output'))
+        home_team = home_team.replace(' ','_')
+        away_team = away_team.replace(' ','_')
+        fig.savefig(f'output/shot_map_{home_team}_{away_team}_{date}.png', 
+                    dpi=500, bbox_inches='tight')

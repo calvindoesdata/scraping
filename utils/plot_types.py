@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 
-from utils.plot_utils_dev import Plotter
+from utils.plot_utils import Plotter
 from utils.data_utils import read_data, get_match_details, get_xg_plot_data, get_team_data
 from utils.scraping_utils import get_shot_data
 

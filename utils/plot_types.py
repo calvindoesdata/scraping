@@ -7,12 +7,25 @@ from utils.scraping_utils import get_shot_data
 # CHANGE TO PRIMARY COLOUR FOR SHOTS AND GIVE EVERYONE THE SAME GOAL COLOUR, LESS CONFUSING IN PLOTS
 team_colours = {
     'Arsenal': ['red','white'],
+    'Aston Villa': ['darkmagenta','lightblue'],
     'Bournemouth': ['black','red'],
+    'Brentford': ['red','white'],
+    'Brighton': ['dodgerblue','white'],
     'Burnley': ['purple','lightblue'],
+    'Chelsea': ['blue','white'],
     'Crystal Palace': ['royalblue','red'],
+    'Everton': ['mediumblue','white'],
+    'Fulham': ['white','black'],
+    'Liverpool': ['red','white'],
+    'Luton Town': ['darkorange','white'],
+    'Manchester United': ['red','black'],
+    'Manchester City': ['deepskyblue','white'],
     'Newcastle United': ['black','white'],
+    'Nottingham Forest': ['red','white'],
     'Sheffield United': ['red','white'],
-    'Tottenham': ['white','navy']
+    'Tottenham': ['white','navy'],
+    'West Ham': ['purple','lightblue'],
+    'Wolverhampton Wanderers': ['gold','black']
 }
 
 class HalfPitchHomeAwayShots:

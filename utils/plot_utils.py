@@ -11,21 +11,33 @@ class Plotter:
         plt.rcParams['figure.facecolor'] = '#E5E0E0'
         plt.rcParams['text.color'] = 'black'
 
-        self.vertical_pitch = VerticalPitch(
-            pitch_type='opta', pad_bottom=0.5, half=True, goal_type='box', goal_alpha=0.8)
+    def pitch_type(self, pitch_layout):
+        if pitch_layout=='half_pitch':
+            vertical_pitch = VerticalPitch(
+                pitch_type='opta', pad_bottom=0.5, half=True, goal_type='box', goal_alpha=0.8)
+        if pitch_layout=='full_pitch':
+            vertical_pitch = VerticalPitch(
+                pitch_type='opta', pad_bottom=0.5, half=False, goal_type='box', goal_alpha=0.8)
+        
+        return vertical_pitch
 
-    def make_plot_grid(self):
-        fig, axs = self.vertical_pitch.grid(
+    def make_plot_grid(self, pitch):
+        fig, axs = pitch.grid(
             figheight=9, ncols=2, endnote_height=0.03, endnote_space=0,
             axis=False, title_height=0.08, grid_height=0.84)
         
         return fig, axs
     
-    def plot_scatter(self, goals_df, non_goals_df, primary_colour, secondary_colour, ax):
-        sc_non_goals = self.vertical_pitch.scatter(
+    def make_normal_plot(self):
+        fig, ax = self.plt.subplots(figsize = (10,5))
+
+        return fig, ax
+    
+    def plot_scatter(self, pitch, goals_df, non_goals_df, primary_colour, secondary_colour, ax):
+        sc_non_goals = pitch.scatter(
             non_goals_df.X, non_goals_df.Y, s=non_goals_df.xG_scaled,
             edgecolors='#606060', c=primary_colour, marker='o', ax=ax)
-        sc_goals = self.vertical_pitch.scatter(
+        sc_goals = pitch.scatter(
             goals_df.X, goals_df.Y, s=goals_df.xG_scaled,
             edgecolors='#606060', c=secondary_colour, marker='o', ax=ax, zorder=1)
         
@@ -75,10 +87,10 @@ class Plotter:
         plt.annotate("", xy=(0.91, 0.919), xycoords=fig.transFigure, xytext=(0.888, 0.919), arrowprops=dict(arrowstyle="->", lw=2, color='black'), zorder=4)
         #plt.annotate("", xy=(0.95, 2), xytext=(0.90, 29), arrowprops=dict(arrowstyle="->", lw=2, color='black'), zorder=2)
 
-    def save_figure(self, fig, home_team, away_team, date):
+    def save_figure(self, fig, home_team, away_team, date, plot_type):
         if not os.path.exists(os.path.join('output')):
             os.mkdir(os.path.join('output'))
         home_team = home_team.replace(' ','_')
         away_team = away_team.replace(' ','_')
-        fig.savefig(f'output/shot_map_{home_team}_{away_team}_{date}.png', 
+        fig.savefig(f'output/{plot_type}_{home_team}_{away_team}_{date}.png', 
                     dpi=500, bbox_inches='tight')

@@ -11,13 +11,9 @@ class Plotter:
         plt.rcParams['figure.facecolor'] = '#E5E0E0'
         plt.rcParams['text.color'] = 'black'
 
-    def pitch_type(self, pitch_layout):
-        if pitch_layout=='half_pitch':
-            vertical_pitch = VerticalPitch(
-                pitch_type='opta', pad_bottom=0.5, half=True, goal_type='box', goal_alpha=0.8)
-        if pitch_layout=='full_pitch':
-            vertical_pitch = VerticalPitch(
-                pitch_type='opta', pad_bottom=0.5, half=False, goal_type='box', goal_alpha=0.8)
+    def pitch_type(self, half_pitch: bool):
+        vertical_pitch = VerticalPitch(
+            pitch_type='opta', pad_bottom=0.5, half=half_pitch, goal_type='box', goal_alpha=0.8)
         
         return vertical_pitch
 

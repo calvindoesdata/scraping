@@ -51,7 +51,7 @@ class HalfPitchHomeAwayShots:
             self.match_shots_data, 'a')
 
         self.plot = Plotter(plt)
-        self.pitch = self.plot.pitch_type('half_pitch')
+        self.pitch = self.plot.pitch_type(half_pitch=True)
         self.fig, self.axs = self.plot.make_plot_grid(self.pitch)
 
         self.home_goal_sc, self.home_non_goal_sc = self.plot.plot_scatter(

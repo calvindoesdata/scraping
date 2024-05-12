@@ -39,3 +39,33 @@ def get_team_data(df, home_or_away: Literal['h','a']):
 
     return goals, non_goals, total_shots
 
+def get_xg_flow_data(df):
+    a_xG = [0]
+    h_xG= [0]
+    a_min = [0]
+    h_min = [0]
+
+    for x in range(len(df['xG'])):
+        if df['h_a'][x]=='h':
+            h_xG.append(float(df['xG'][x]))
+            h_min.append(int(df['minute'][x]))
+        if df['h_a'][x]=='a':
+            a_xG.append(float(df['xG'][x]))
+            a_min.append(int(df['minute'][x]))
+
+    if h_min[-1]<=90 and a_min[-1]<=90:
+        h_min.append(90)
+        h_xG.append(0)
+        a_min.append(90)
+        a_xG.append(0)
+    if h_min[-1]>=90 and a_min[-1]<90:
+        a_min.append(h_min[-1])
+        a_xG.append(0)
+    if h_min[-1]<90 and a_min[-1]>=90:
+        h_min.append(a_min[-1])
+        h_xG.append(0)
+
+    h_cumulative = [sum(h_xG[:i+1]) for i in range(len(h_xG))]
+    a_cumulative = [sum(a_xG[:i+1]) for i in range(len(a_xG))]
+
+    return h_cumulative, h_min, a_cumulative, a_min

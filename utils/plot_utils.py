@@ -38,20 +38,13 @@ class Plotter:
             edgecolors='#606060', c=secondary_colour, marker='o', ax=ax, zorder=1)
         
         return sc_goals, sc_non_goals
-
-    def plot_main_text(self, plt, title):
-        plt.title(title, ha="center", va="center",
-                  fontsize=20, fontweight='bold', color='black')
-        plt.text(x=+0, y=+0,
-                 s='Data from Understat.\nChart by @gavdoesdata.',
-                 fontsize=9, color='black')
         
-    def plot_multi_main_text(self, axs, title):
-        axs['title'].text(x=+0.5, y=+0.4, s=title, ha="center", va="center", fontsize=24, fontweight='bold', color='black')
+    def plot_multi_main_text(self, axs, title, main_x, main_y, main_fontsize, secondary_x, secondary_y, secondary_fontsize):
+        axs.text(x=main_x, y=main_y, s=title, ha="center", va="center", fontsize=main_fontsize, fontweight='bold', color='black')
 
-        self.plt.text(x=+0, y=+0,
+        self.plt.text(x=secondary_x, y=secondary_y,
                  s='Data from Understat.\nChart by @gavdoesdata.',
-                 fontsize=9, color='black')
+                 fontsize=secondary_fontsize, color='black')
 
     def plot_multi_axes_text(self, ax, title, title_elements, colours):
         ax_title = ax.text(100, 101, title, ha='left', va='center', fontsize=14, fontweight='bold')

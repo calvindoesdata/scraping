@@ -36,12 +36,12 @@ class HalfPitchHomeAwayShots:
         self.away_team = away_team
         self.scrape = scrape
 
-        self.date, self.total_home_goals, self.total_away_goals, self.total_home_xg, self.total_away_xg = get_match_details(
-            self.home_team, self.away_team)
-
         if self.scrape:
-            self.data = get_shot_data(self.home_team, self.away_team)
+            self.date, self.total_home_goals, self.total_away_goals, self.total_home_xg, self.total_away_xg, self.data = \
+                get_shot_data(self.home_team, self.away_team)
         else:
+            self.date, self.total_home_goals, self.total_away_goals, self.total_home_xg, self.total_away_xg = get_match_details(
+                self.home_team, self.away_team)
             self.data = read_data(home_team, 'shots')
         # MAKE THE FOLLOWING THREE STEPS MORE EFFICIENT
         self.match_shots_data = get_xg_plot_data(self.data, self.home_team, self.away_team)
@@ -63,7 +63,7 @@ class HalfPitchHomeAwayShots:
 
         self.plot.plot_multi_main_text(
             self.axs['title'], title=f'{self.home_team} v {self.away_team} | {self.total_home_goals}-{self.total_away_goals} | Premier League | {self.date}', 
-            main_x=+0.5, main_y=+0.4, main_fontsize=24, secondary_x=0, secondary_y=0, secondary_fontsize=9)
+            main_x=+0.5, main_y=+0.4, main_fontsize=26, secondary_x=0, secondary_y=0, secondary_fontsize=9)
         self.plot.plot_multi_axes_text(self.axs['pitch'][0], title=f'{self.home_team} | ', title_elements=['Shots', 'and', 'Goals'], 
                           colours=[team_colours[home_team][0], 'black', team_colours[home_team][1]])
         self.plot.plot_multi_axes_text(self.axs['pitch'][1], title=f'{self.away_team} | ', title_elements=['Shots', 'and', 'Goals'], 
@@ -79,13 +79,13 @@ class XGFlow:
         self.away_team = away_team
         self.scrape = scrape
 
-        self.date, self.total_home_goals, self.total_away_goals, self.total_home_xg, self.total_away_xg = get_match_details(
-            self.home_team, self.away_team)
-
         if self.scrape:
-            self.data = get_shot_data(self.home_team, self.away_team).reset_index(drop=True)
+            self.date, self.total_home_goals, self.total_away_goals, self.total_home_xg, self.total_away_xg, self.data = \
+                get_shot_data(self.home_team, self.away_team)
         else:
-            self.data = read_data(home_team, 'shots').reset_index(drop=True)
+            self.date, self.total_home_goals, self.total_away_goals, self.total_home_xg, self.total_away_xg = get_match_details(
+                self.home_team, self.away_team)
+            self.data = read_data(home_team, 'shots')
 
         h_cumulative, h_min, a_cumulative, a_min = get_xg_flow_data(self.data)
 
@@ -102,11 +102,15 @@ class XGFlow:
         self.axs.set_xlabel('Minute', color='black', fontsize=11)
         self.axs.set_ylabel('xG', color='black', fontsize=11)
 
+        title_height = max(h_cumulative[-1], a_cumulative[-1]) + 0.25
+
         self.plot.plot_multi_main_text(
             self.axs, f'{self.home_team} v {self.away_team} | {self.total_home_goals}-{self.total_away_goals} | Premier League | {self.date}', 
-            main_x=+45, main_y=+3, main_fontsize=16, secondary_x=+90, secondary_y=-0.5, secondary_fontsize=6)
+            main_x=+45, main_y=+title_height, main_fontsize=14, secondary_x=+90, secondary_y=-0.5, secondary_fontsize=6)
 
-        self.axs.step(x=h_min,y=h_cumulative,color='black',label=self.home_team,linewidth=3,where='post')
-        self.axs.step(x=a_min,y=a_cumulative,color='dodgerblue',label=self.away_team,linewidth=3,where='post')
+        self.axs.step(x=h_min,y=h_cumulative,color=team_colours[self.home_team][0],
+                      label=self.home_team,linewidth=3,where='post')
+        self.axs.step(x=a_min,y=a_cumulative,color=team_colours[self.away_team][0],
+                      label=self.away_team,linewidth=3,where='post')
 
         self.plot.save_figure(self.fig, self.home_team, self.away_team, self.date, 'xg_flow')

@@ -4,10 +4,10 @@ from typing import Literal
 def read_data(team, type):
     if type=='shots':
         team_directory = team.replace(' ', '_')
-        df = pd.read_csv(f'data/understat/{team_directory}/2023/shots/all_shots_data.csv')
+        df = pd.read_csv(f'data/understat/{team_directory}/2024/shots/all_shots_data.csv')
     elif type=='match':
         team_directory = team.replace(' ', '_')
-        df = pd.read_csv(f'data/understat/{team_directory}/2023/matches/PL_matches.csv')
+        df = pd.read_csv(f'data/understat/{team_directory}/2024/matches/PL_matches.csv')
 
     return df
 
@@ -64,6 +64,15 @@ def get_xg_flow_data(df):
     if h_min[-1]<90 and a_min[-1]>=90:
         h_min.append(a_min[-1])
         h_xG.append(0)
+    if h_min[-1]>=90 and a_min[-1]>=90:
+        if h_min[-1] > a_min[-1]:
+            a_min.append(h_min[-1])
+            a_xG.append(0)
+        elif h_min[-1] < a_min[-1]:
+            h_min.append(a_min[-1])
+            h_xG.append(0)
+        else:
+            pass
 
     h_cumulative = [sum(h_xG[:i+1]) for i in range(len(h_xG))]
     a_cumulative = [sum(a_xG[:i+1]) for i in range(len(a_xG))]

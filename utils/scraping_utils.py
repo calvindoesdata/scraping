@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 
 def get_matches(home_team, away_team):
     team = home_team.replace(' ','_')
-    response = requests.get(f'https://understat.com/team/{team}/2023')
+    response = requests.get(f'https://understat.com/team/{team}/2024')
 
     soup = BeautifulSoup(response.text, 'html.parser')
     ugly_soup = str(soup)

@@ -81,5 +81,5 @@ class Plotter:
             os.mkdir(os.path.join('output'))
         home_team = home_team.replace(' ','_')
         away_team = away_team.replace(' ','_')
-        fig.savefig(f'output/{plot_type}_{home_team}_{away_team}_{date}.png', 
+        fig.savefig(f'output/2024/{plot_type}_{home_team}_{away_team}_{date}.png', 
                     dpi=500, bbox_inches='tight')

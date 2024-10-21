@@ -18,6 +18,7 @@ team_colours = {
     'Crystal Palace': ['royalblue','red'],
     'Everton': ['mediumblue','white'],
     'Fulham': ['white','black'],
+    'Leicester': ['blue','white'],
     'Liverpool': ['red','white'],
     'Luton Town': ['darkorange','white'],
     'Manchester United': ['red','black'],
@@ -25,9 +26,13 @@ team_colours = {
     'Newcastle United': ['black','white'],
     'Nottingham Forest': ['red','white'],
     'Sheffield United': ['red','white'],
+    'Southampton': ['red','white'],
     'Tottenham': ['white','navy'],
     'West Ham': ['purple','lightblue'],
-    'Wolverhampton Wanderers': ['gold','black']
+    'Wolverhampton Wanderers': ['gold','black'],
+
+    'England': ['white','red'],
+    'Slovakia': ['lightblue','white']
 }
 
 class HalfPitchHomeAwayShots:
@@ -114,3 +119,44 @@ class XGFlow:
                       label=self.away_team,linewidth=3,where='post')
 
         self.plot.save_figure(self.fig, self.home_team, self.away_team, self.date, 'xg_flow')
+
+class SofaScoreHomeAwayShots():
+    def __init__(self, home_team, away_team, home_goals, home_non_goals, away_goals, away_non_goals, 
+                 total_home_shots, total_away_shots, total_home_goals, total_away_goals, total_home_xg, total_away_xg, 
+                 date):
+        self.home_team = home_team
+        self.away_team = away_team
+        self.home_goals = home_goals
+        self.home_non_goals = home_non_goals
+        self.away_goals = away_goals
+        self.away_non_goals = away_non_goals
+        self.total_home_shots = total_home_shots
+        self.total_away_shots = total_away_shots
+        self.total_home_goals = total_home_goals
+        self.total_away_goals = total_away_goals
+        self.total_home_xg = total_home_xg
+        self.total_away_xg = total_away_xg
+        self.date = date
+
+        self.plot = Plotter(plt)
+        self.pitch = self.plot.pitch_type(half_pitch=True)
+        self.fig, self.axs = self.plot.make_plot_grid(self.pitch)
+
+        self.home_goal_sc, self.home_non_goal_sc = self.plot.plot_scatter(
+            self.pitch, self.home_goals, self.home_non_goals, team_colours[home_team][0], team_colours[home_team][1], 
+            self.axs['pitch'][0])
+        self.away_goal_sc, self.away_non_goal_sc = self.plot.plot_scatter(
+            self.pitch, self.away_goals,self. away_non_goals, team_colours[away_team][0], team_colours[away_team][1], 
+            self.axs['pitch'][1])
+
+        self.plot.plot_multi_main_text(
+            self.axs['title'], title=f'{self.home_team} v {self.away_team} | {self.total_home_goals}-{self.total_away_goals} | Euros Championship | {self.date}', 
+            main_x=+0.5, main_y=+0.4, main_fontsize=26, secondary_x=0, secondary_y=0, secondary_fontsize=9)
+        self.plot.plot_multi_axes_text(self.axs['pitch'][0], title=f'{self.home_team} | ', title_elements=['Shots', 'and', 'Goals'], 
+                          colours=[team_colours[home_team][0], 'black', team_colours[home_team][1]])
+        self.plot.plot_multi_axes_text(self.axs['pitch'][1], title=f'{self.away_team} | ', title_elements=['Shots', 'and', 'Goals'], 
+                          colours=[team_colours[away_team][0], 'black', team_colours[away_team][1]])
+        self.plot.plot_multi_axes_shots_text(self.axs['pitch'][0], [self.total_home_shots, self.total_home_xg])
+        self.plot.plot_multi_axes_shots_text(self.axs['pitch'][1], [self.total_away_shots, self.total_away_xg])
+
+        self.plot.save_figure(self.fig, self.home_team, self.away_team, self.date, 'shot_map')

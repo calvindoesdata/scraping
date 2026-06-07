@@ -1,6 +1,7 @@
 import os
 from matplotlib.patches import Ellipse
-from mplsoccer import VerticalPitch
+from mplsoccer import Pitch, VerticalPitch
+from typing import Tuple
 
 class Plotter:
     def __init__(self, plt):
@@ -12,20 +13,29 @@ class Plotter:
         plt.rcParams['text.color'] = 'black'
 
     def pitch_type(self, half_pitch: bool):
-        vertical_pitch = VerticalPitch(
-            pitch_type='opta', pad_bottom=0.5, half=half_pitch, goal_type='box', goal_alpha=0.8)
+        if half_pitch:
+            pitch = VerticalPitch(
+                pitch_type='opta', pad_bottom=0.5, half=half_pitch, goal_type='box', goal_alpha=0.8)
+        else:
+            pitch = Pitch(
+                pitch_type='opta', goal_type='box', goal_alpha=0.8)
         
-        return vertical_pitch
+        return pitch
 
     def make_plot_grid(self, pitch):
-        fig, axs = pitch.grid(
-            figheight=9, ncols=2, endnote_height=0.03, endnote_space=0,
-            axis=False, title_height=0.08, grid_height=0.84)
+        if pitch.half==True:
+            fig, axs = pitch.grid(
+                figheight=9, ncols=2, endnote_height=0.00, endnote_space=0,
+                axis=False, title_height=0.08, grid_height=0.84)
+        else:
+            fig, axs = pitch.grid(
+                figheight=9, ncols=1, endnote_height=0.03, endnote_space=0,
+                axis=False, title_height=0.00, grid_height=0.84)
         
         return fig, axs
     
     def make_normal_plot(self):
-        fig, ax = self.plt.subplots(figsize = (10,5))
+        fig, ax = self.plt.subplots(figsize = (9,5))
 
         return fig, ax
     
@@ -46,15 +56,50 @@ class Plotter:
                  s='Data from Understat.\nChart by @gavdoesdata.',
                  fontsize=secondary_fontsize, color='black')
 
-    def plot_multi_axes_text(self, ax, title, title_elements, colours):
-        ax_title = ax.text(100, 101, title, ha='left', va='center', fontsize=14, fontweight='bold')
-        for element, colour in zip(title_elements, colours):
-            ax_title = ax.annotate(element + ' ', xycoords=ax_title, xy=(1, 0), verticalalignment="bottom", 
-                                   fontsize=15, color=colour, weight="bold")
+    def plot_multi_axes_text(self, ax, title, title_elements, colours, half_pitch, home=False):
+        if half_pitch:
+            ax_title = ax.text(100, 101, title, ha='left', va='center', fontsize=14, fontweight='bold')
+            for element, colour in zip(title_elements, colours):
+                ax_title = ax.annotate(element + ' ', xycoords=ax_title, xy=(1, 0), verticalalignment="bottom",
+                                       fontsize=15, color=colour, weight="bold")
+        else:
+            if home:
+                coords, h_justification = (0,102), 'left'
+            else:
+                coords, h_justification = (100,102), 'left'
+            ax_title = ax.text(coords[0], coords[1], title, ha=h_justification, va='center', fontsize=14, fontweight='bold')
+            for element, colour in zip(title_elements, colours):
+                ax_title = ax.annotate(element + ' ', xycoords=ax_title, xy=(1, 0), verticalalignment="bottom",
+                                       fontsize=15, color=colour, weight="bold")
             
-    def plot_multi_axes_shots_text(self, ax, elements):
-        ax.text(x=1.5, y=51, s=f'Total shots: {elements[0]}\nTotal xG: {elements[1]:.1f}', 
-                fontsize=15, fontweight='bold', horizontalalignment='right')
+    def plot_multi_axes_shots_text(self, ax, elements, half_pitch=False, home=False):
+        if half_pitch:
+            ax.text(x=1.5, y=51, s=f'Total shots: {elements[0]}\nTotal xG: {elements[1]:.1f}', 
+                    fontsize=15, fontweight='bold', horizontalalignment='right')
+        else:
+            if home:
+                ax.text(x=49, y=1.5, s=f'Total shots: {elements[0]}\nTotal xG: {elements[1]:.1f}', 
+                        fontsize=14, fontweight='bold', horizontalalignment='right')
+            else:
+                ax.text(x=51, y=1.5, s=f'Total shots: {elements[0]}\nTotal xG: {elements[1]:.1f}', 
+                        fontsize=14, fontweight='bold', horizontalalignment='left')
+
+    def plot_single_axis_header(self, ax, home_team, away_team, home_goals, away_goals, match_date):
+        # ax.text(x=50, y=98.5, s=f'{home_team} v {away_team}\n{str(home_goals)} - {str(away_goals)}', 
+        #         fontsize=22, fontweight='bold', horizontalalignment='center', verticalalignment='top')
+        teams_len_diff = len(home_team) - len(away_team)
+        # if teams_len_diff > 0:
+        #     home_team = abs(teams_len_diff)*' ' + home_team
+        # elif teams_len_diff < 0:
+        #     away_team = away_team + abs(teams_len_diff)*' '
+        ax.text(x=50, y=98.5, s=f'{home_team} | {str(home_goals)} - {str(away_goals)} | {away_team}', 
+                fontsize=22, fontweight='bold', horizontalalignment='center', verticalalignment='top')
+        ax.text(x=50, y=93, s=f'Premier League | {match_date}', 
+                fontsize=16, fontweight='bold', horizontalalignment='center', verticalalignment='top')
+
+    def plot_single_axis_shots_text(self, ax, home_elements, away_elements):
+        ax.text(x=50, y=1.5, s=f'{home_elements[0]} <- Shots -> {away_elements[0]}\n{home_elements[1]:.1f} <- xG -> {away_elements[1]:.1f}', 
+                fontsize=14, fontweight='bold', horizontalalignment='center')
 
     def plot_legend(self, plt_or_ax, chart_objects_list, labels):
         leg = plt_or_ax.legend(chart_objects_list, labels, ncol=1, frameon=True, fontsize=12,
@@ -76,10 +121,10 @@ class Plotter:
         plt.annotate("", xy=(0.91, 0.919), xycoords=fig.transFigure, xytext=(0.888, 0.919), arrowprops=dict(arrowstyle="->", lw=2, color='black'), zorder=4)
         #plt.annotate("", xy=(0.95, 2), xytext=(0.90, 29), arrowprops=dict(arrowstyle="->", lw=2, color='black'), zorder=2)
 
-    def save_figure(self, fig, home_team, away_team, date, plot_type):
+    def save_figure(self, fig, home_team, away_team, date, plot_type, year):
         if not os.path.exists(os.path.join('output')):
             os.mkdir(os.path.join('output'))
         home_team = home_team.replace(' ','_')
         away_team = away_team.replace(' ','_')
-        fig.savefig(f'output/2024/{plot_type}_{home_team}_{away_team}_{date}.png', 
+        fig.savefig(f'output/{year}/{plot_type}_{home_team}_{away_team}_{date}.png', 
                     dpi=500, bbox_inches='tight')

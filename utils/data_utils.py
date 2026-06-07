@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from typing import Literal
 
 def read_data(team, type):
@@ -17,6 +18,7 @@ def get_match_details(home_team, away_team):
         (home_matches['h.title']==home_team) & (home_matches['a.title']==away_team)
         ]
     date = match_info['datetime'].values[0].split(' ')[0]
+    # date = (lambda x: x[2]+'-'+x[1]+'-'+x[0])(match_info['datetime'].values[0].split(' ')[0])
     home_goals = match_info['goals.h'].values[0].astype('int')
     away_goals = match_info['goals.a'].values[0].astype('int')
     home_xg = match_info['xG.h'].values[0]
@@ -24,10 +26,17 @@ def get_match_details(home_team, away_team):
 
     return date, home_goals, away_goals, home_xg, away_xg
 
-def get_xg_plot_data(df, home_team, away_team):
+def get_xg_plot_data(df, home_team, away_team, half_pitch):
     shots_data = df[(df['h_team']==home_team) & (df['a_team']==away_team)]
-    shots_data['X'] = shots_data['X'].astype(float)*100
-    shots_data['Y'] = shots_data['Y'].astype(float)*100
+    shots_data.to_csv('shots_data.csv')
+    if half_pitch==True:
+        shots_data['X'] = shots_data['X'].astype(float)*100
+        shots_data['Y'] = shots_data['Y'].astype(float)*100
+    else:
+        shots_data['X'].loc[shots_data['h_a']=='h'] = (1 - shots_data['X'].astype(float))*100
+        shots_data['Y'].loc[shots_data['h_a']=='h'] = (1 - shots_data['Y'].astype(float))*100
+        shots_data['X'].loc[shots_data['h_a']=='a'] = shots_data['X'].astype(float)*100
+        shots_data['Y'].loc[shots_data['h_a']=='a'] = shots_data['Y'].astype(float)*100
     shots_data['xG_scaled'] = shots_data['xG'].astype(float) * 1500
 
     return shots_data
@@ -44,6 +53,7 @@ def get_xg_flow_data(df):
     h_xG= [0]
     a_min = [0]
     h_min = [0]
+    df.reset_index(inplace=True)
 
     for x in range(len(df['xG'])):
         if df['h_a'][x]=='h':

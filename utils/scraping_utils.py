@@ -7,9 +7,9 @@ import pandas as pd
 
 from bs4 import BeautifulSoup
 
-def get_matches(home_team, away_team):
+def get_matches(home_team, away_team, year):
     team = home_team.replace(' ','_')
-    response = requests.get(f'https://understat.com/team/{team}/2024')
+    response = requests.get(f'https://understat.com/team/{team}/{year}')
 
     soup = BeautifulSoup(response.text, 'html.parser')
     ugly_soup = str(soup)
@@ -31,8 +31,8 @@ def get_matches(home_team, away_team):
 
     return date, home_goals, away_goals, home_xg, away_xg, match_id
 
-def get_shot_data(home_team, away_team):
-    date, home_goals, away_goals, home_xg, away_xg, match_id = get_matches(home_team, away_team)
+def get_shot_data(home_team, away_team, year):
+    date, home_goals, away_goals, home_xg, away_xg, match_id = get_matches(home_team, away_team, year)
     response = requests.get(f'https://understat.com/match/{match_id}')
     soup = BeautifulSoup(response.text, 'html.parser')
     ugly_soup = str(soup)
